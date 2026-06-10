@@ -16,7 +16,12 @@ import {
     Alert,
     Stack,
     FormHelperText,
+    InputAdornment,
+    IconButton,
+    Link,
 } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile'];
 
@@ -25,6 +30,7 @@ function Register() {
         register,
         handleSubmit,
         control,
+        watch,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -33,6 +39,7 @@ function Register() {
             username: '',
             email: '',
             password: '',
+            confirmPassword: '',
             dateOfBirth: '',
             mainPlatform: '',
         },
@@ -41,6 +48,10 @@ function Register() {
     const [firebaseError, setFirebaseError] = useState('');
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const password = watch("password", ""); // para verificar a password
 
     function calculateAge(dateOfBirth) {
         const today = new Date();
@@ -152,7 +163,7 @@ function Register() {
 
                 <TextField
                     label="Password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     fullWidth
                     {...register("password", {
                         required: "Set a password to protect your account.",
@@ -169,6 +180,49 @@ function Register() {
                     })}
                     error={!!errors.password}
                     helperText={errors.password?.message}
+                    slotProps={{
+                        input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowPassword((show) => !show)}
+                                        edge="end"
+                                        aria-label="toggle password visibility"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
+                />
+
+                <TextField
+                    label="Confirm Password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    fullWidth
+                    {...register("confirmPassword", {
+                        required: "Please confirm your password.",
+                        validate: (value) =>
+                            value === password || "Passwords don't match.",
+                    })}
+                    error={!!errors.confirmPassword}
+                    helperText={errors.confirmPassword?.message}
+                    slotProps={{
+                        input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowConfirmPassword((show) => !show)}
+                                        edge="end"
+                                        aria-label="toggle confirm password visibility"
+                                    >
+                                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
                 />
 
                 <TextField
@@ -219,6 +273,14 @@ function Register() {
                 <Button type="submit" variant="contained" disabled={loading}>
                     {loading ? "Spawning player..." : "Register"}
                 </Button>
+
+                <Typography variant="body2" align="center">
+                    Already have an account? {" "}
+                    <Link href="#">
+                        Log in
+                    </Link>
+
+                </Typography>
             </Stack>
         </Box>
     );
