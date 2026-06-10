@@ -53,17 +53,17 @@ function Register() {
         return age;
     }
 
-    //So quando todos os campos estiverem preenchidos, o botão de submit permite ser usado
+    // Only runs when ALL fields pass React Hook Form validation
     async function onSubmit(data) {
         setFirebaseError('');
         setSuccess(false);
         setLoading(true);
 
         try {
-            // vai criar o usuário no Firebase Authentication
+            // Create the user in Firebase Authentication
             const credentials = await createUserWithEmailAndPassword(auth, data.email, data.password);
 
-            // depois de criar o usuário, gavamos os dados adicionais no Firestore
+            // Save the rest of the profile in Firestore
             await setDoc(doc(db, 'users', credentials.user.uid), {
                 email: data.email,
                 firstName: data.firstName.trim(),
@@ -72,9 +72,9 @@ function Register() {
                 username: data.username.trim(),
                 mainPlatform: data.mainPlatform,
                 isAdmin: false,
-                createdAt: new Date().toISOString(), // opcional: para saber quando o usuário foi criado
+                createdAt: new Date().toISOString(),
             });
-            setSuccess(true); // exibe mensagem de sucesso
+            setSuccess(true);
 
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
@@ -82,7 +82,7 @@ function Register() {
             } else if (error.code === 'auth/invalid-email') {
                 setFirebaseError('Invalid email address. Try again.');
             } else if (error.code === 'auth/weak-password') {
-                setFirebaseError('Not strong enough. Power up your password. Use at least 6 characters with letters, numbers and a special character.');
+                setFirebaseError('Not strong enough. Power up your password — at least 6 characters with letters, numbers and a special character.');
             } else {
                 setFirebaseError('Game over… try again in a moment.');
             }
@@ -105,7 +105,7 @@ function Register() {
 
             <Stack spacing={2}>
                 <TextField
-                    label="Tell us your first name."
+                    label="First Name"
                     fullWidth
                     {...register("firstName", {
                         required: "Enter your first name to join.",
@@ -115,7 +115,7 @@ function Register() {
                     helperText={errors.firstName?.message}
                 />
                 <TextField
-                    label="And your last name."
+                    label="Last Name"
                     fullWidth
                     {...register("lastName", {
                         required: "Enter your last name to join.",
@@ -125,10 +125,10 @@ function Register() {
                     helperText={errors.lastName?.message}
                 />
                 <TextField
-                    label="Every player needs a username. Choose yours."
+                    label="Username"
                     fullWidth
                     {...register("username", {
-                        required: "Username is required.",
+                        required: "Every player needs a username. Choose yours.",
                         minLength: { value: 2, message: "Too short! Needs at least 2 characters." },
                     })}
                     error={!!errors.username}
@@ -136,7 +136,7 @@ function Register() {
                 />
 
                 <TextField
-                    label="Drop your email here."
+                    label="Email"
                     type="email"
                     fullWidth
                     {...register("email", {
@@ -151,7 +151,7 @@ function Register() {
                 />
 
                 <TextField
-                    label="A password is required. Make it strong!."
+                    label="Password"
                     type="password"
                     fullWidth
                     {...register("password", {
@@ -172,7 +172,7 @@ function Register() {
                 />
 
                 <TextField
-                    label="When were you born?."
+                    label="Date of Birth"
                     type="date"
                     fullWidth
                     slotProps={{ inputLabel: { shrink: true } }}
@@ -199,7 +199,7 @@ function Register() {
                             <InputLabel id="platform-label">Main Platform</InputLabel>
                             <Select
                                 labelId="platform-label"
-                                label="Pick your platform."
+                                label="Main Platform"
                                 {...field}
                             >
                                 {PLATFORMS.map((p) => (
