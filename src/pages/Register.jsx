@@ -78,13 +78,13 @@ function Register() {
 
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
-                setFirebaseError('This email is already registered. Please use a different email.');
+                setFirebaseError('Player already registered. Head to login.');
             } else if (error.code === 'auth/invalid-email') {
-                setFirebaseError('The email address is not valid. Please enter a valid email.');
+                setFirebaseError('Invalid email address. Try again.');
             } else if (error.code === 'auth/weak-password') {
-                setFirebaseError('The password is too weak. Please enter a stronger password (at least 6 characters).');
+                setFirebaseError('Not strong enough. Power up your password. Use at least 6 characters with letters, numbers and a special character.');
             } else {
-                setFirebaseError('An unexpected error occurred. Please try again later.');
+                setFirebaseError('Game over… try again in a moment.');
             }
             console.error('Error creating user:', error);
         } finally {
@@ -105,45 +105,45 @@ function Register() {
 
             <Stack spacing={2}>
                 <TextField
-                    label="First Name"
+                    label="Tell us your first name."
                     fullWidth
                     {...register("firstName", {
-                        required: "First name is required.",
-                        minLength: { value: 2, message: "Minimum 2 characters." },
+                        required: "Enter your first name to join.",
+                        minLength: { value: 2, message: "Too short! Needs at least 2 characters." },
                     })}
                     error={!!errors.firstName}
                     helperText={errors.firstName?.message}
                 />
                 <TextField
-                    label="Last Name"
+                    label="And your last name."
                     fullWidth
                     {...register("lastName", {
-                        required: "Last name is required.",
-                        minLength: { value: 2, message: "Minimum 2 characters." },
+                        required: "Enter your last name to join.",
+                        minLength: { value: 2, message: "Too short! Needs at least 2 characters." },
                     })}
                     error={!!errors.lastName}
                     helperText={errors.lastName?.message}
                 />
                 <TextField
-                    label="Username"
+                    label="Every player needs a username. Choose yours."
                     fullWidth
                     {...register("username", {
                         required: "Username is required.",
-                        minLength: { value: 2, message: "Minimum 2 characters." },
+                        minLength: { value: 2, message: "Too short! Needs at least 2 characters." },
                     })}
                     error={!!errors.username}
                     helperText={errors.username?.message}
                 />
 
                 <TextField
-                    label="Email"
+                    label="Drop your email here."
                     type="email"
                     fullWidth
                     {...register("email", {
-                        required: "Email is required.",
+                        required: "We need an email to create your account.",
                         pattern: {
                             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                            message: "Please enter a valid email.",
+                            message: "Hmm, that doesn't look like an email. Try again.",
                         },
                     })}
                     error={!!errors.email}
@@ -151,18 +151,18 @@ function Register() {
                 />
 
                 <TextField
-                    label="Password"
+                    label="A password is required. Make it strong!."
                     type="password"
                     fullWidth
                     {...register("password", {
-                        required: "Password is required.",
-                        minLength: { value: 6, message: "At least 6 characters." },
+                        required: "Set a password to protect your account.",
+                        minLength: { value: 6, message: "Needs at least 6 characters." },
                         validate: (value) => {
                             const hasLetter = /[a-zA-Z]/.test(value);
                             const hasNumber = /[0-9]/.test(value);
                             const hasSpecial = /[^a-zA-Z0-9]/.test(value);
                             if (!hasLetter || !hasNumber || !hasSpecial) {
-                                return "Must include letters, numbers and a special character.";
+                                return "Power up: mix letters, numbers and a special character.";
                             }
                             return true;
                         },
@@ -172,16 +172,16 @@ function Register() {
                 />
 
                 <TextField
-                    label="Date of Birth"
+                    label="When were you born?."
                     type="date"
                     fullWidth
                     slotProps={{ inputLabel: { shrink: true } }}
                     {...register("dateOfBirth", {
-                        required: "Please enter your date of birth.",
+                        required: "Enter your date of birth.",
                         validate: (value) => {
                             const age = calculateAge(value);
-                            if (age < 18 || age > 120) {
-                                return "You must be between 18 and 120 years old.";
+                            if (age < 16 || age > 120) {
+                                return "You need to be at least 16 years old.";
                             }
                             return true;
                         },
@@ -193,13 +193,13 @@ function Register() {
                 <Controller
                     name="mainPlatform"
                     control={control}
-                    rules={{ required: "Please choose your main platform." }}
+                    rules={{ required: "Where do you play? Choose one." }}
                     render={({ field }) => (
                         <FormControl fullWidth error={!!errors.mainPlatform}>
                             <InputLabel id="platform-label">Main Platform</InputLabel>
                             <Select
                                 labelId="platform-label"
-                                label="Main Platform"
+                                label="Pick your platform."
                                 {...field}
                             >
                                 {PLATFORMS.map((p) => (
@@ -214,10 +214,10 @@ function Register() {
                 />
 
                 {firebaseError && <Alert severity="error">{firebaseError}</Alert>}
-                {success && <Alert severity="success">Account created successfully!</Alert>}
+                {success && <Alert severity="success">GG! Your player profile is ready. Welcome to GG Mates!</Alert>}
 
                 <Button type="submit" variant="contained" disabled={loading}>
-                    {loading ? "Creating account..." : "Register"}
+                    {loading ? "Spawning player..." : "Register"}
                 </Button>
             </Stack>
         </Box>
