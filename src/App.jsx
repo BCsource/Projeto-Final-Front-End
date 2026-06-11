@@ -10,6 +10,8 @@ import MyThreads from './pages/MyThreads'
 import Favs from './pages/Favs'
 import Profile from './pages/Profile'
 import AllUsersAdminOnly from './pages/AllUsersAdminOnly'
+import ViewThread from './pages/ViewThread'
+import EditProfile from './pages/EditProfile'
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
 
         <Route path="/" element={<HomePage />} />
         <Route path="/threads/new" element={<NewThread />} />
+        <Route path="/threads/:threadId" element={<ViewThread />} />
         <Route path="/threads/:threadId/edit" element={<EditThread />} />
 
 
@@ -27,6 +30,7 @@ function App() {
         <Route path="/favorites" element={<Favs />} />
 
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/edit" element={<EditProfile />} />
 
 
         <Route path="/admin/users" element={<AllUsersAdminOnly />} />
