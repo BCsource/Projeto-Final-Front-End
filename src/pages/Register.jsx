@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import {
     Box,
@@ -45,6 +46,8 @@ function Register() {
         },
     });
 
+    const navigate = useNavigate();
+
     const [firebaseError, setFirebaseError] = useState('');
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -86,6 +89,9 @@ function Register() {
                 createdAt: new Date().toISOString(),
             });
             setSuccess(true);
+
+            // pausa para o user ver a mensagem antes de ir para a home
+            setTimeout(() => navigate('/'), 1500);
 
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
@@ -276,7 +282,7 @@ function Register() {
 
                 <Typography variant="body2" align="center">
                     Already have an account? {" "}
-                    <Link href="#">
+                    <Link component={RouterLink} to="/login">
                         Log in
                     </Link>
 
