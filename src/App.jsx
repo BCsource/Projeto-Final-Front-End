@@ -6,7 +6,7 @@ function App() {
 
 
   return (
-    <Register />
+    <Register /> // acho que deviamos usar o react router para navegar entre as páginas - bruna
   )
 }
 
