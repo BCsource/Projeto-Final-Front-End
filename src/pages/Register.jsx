@@ -1,9 +1,9 @@
 ﻿import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import {
     Box,
@@ -27,6 +27,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile'];
 
 function Register() {
+    const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
@@ -52,7 +54,8 @@ function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const password = watch("password", ""); // para verificar a password
+    // Used to check that "Confirm Password" matches "Password"
+    const password = watch('password', '');
 
     function calculateAge(dateOfBirth) {
         const today = new Date();
@@ -76,6 +79,7 @@ function Register() {
             const credentials = await createUserWithEmailAndPassword(auth, data.email, data.password);
 
             // Save the rest of the profile in Firestore
+            // (confirmPassword is only used for validation — we don't store it)
             await setDoc(doc(db, 'users', credentials.user.uid), {
                 email: data.email,
                 firstName: data.firstName.trim(),
@@ -86,7 +90,9 @@ function Register() {
                 isAdmin: false,
                 createdAt: new Date().toISOString(),
             });
+
             setSuccess(true);
+            // Show the success message briefly, then go to the home page
             setTimeout(() => navigate('/'), 1500);
 
         } catch (error) {
@@ -277,11 +283,10 @@ function Register() {
                 </Button>
 
                 <Typography variant="body2" align="center">
-                    Already have an account? {" "}
-                    <Link href="#">
+                    Already have an account?{" "}
+                    <Link component={RouterLink} to="/login">
                         Log in
                     </Link>
-
                 </Typography>
             </Stack>
         </Box>
