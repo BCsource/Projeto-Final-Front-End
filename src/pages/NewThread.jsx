@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { db } from '../firebase';
+import { useAuth } from '../context/AuthContext';
 
 import {
     Box,
@@ -25,6 +26,9 @@ const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile'];
 const REGIONS = ['NA', 'SA', 'Europe', 'Africa', 'Asia', 'Australia'];
 
 function NewThread() {
+    const { currentUser } = useAuth();
+    const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
@@ -43,8 +47,6 @@ function NewThread() {
         },
     });
 
-    const navigate = useNavigate();
-
     const [firebaseError, setFirebaseError] = useState('');
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -54,9 +56,9 @@ function NewThread() {
         setSuccess(false);
         setLoading(true);
 
-        {/*pfv cria o login para começarmos a testar com accs*/ }
 
-        if (!auth.currentUser) {
+
+        if (!currentUser) {
             setFirebaseError('You need to be logged in to post a thread.');
             setLoading(false);
             return;
@@ -72,7 +74,7 @@ function NewThread() {
                 releaseYear: data.releaseYear,
                 difficulty: data.difficulty,
                 region: data.region,
-                authorId: auth.currentUser.uid,
+                authorId: currentUser.uid,
                 createdAt: new Date().toISOString(),
             });
 
@@ -149,6 +151,8 @@ function NewThread() {
                     )}
                 />
 
+                {/*talvez fique mais controlável fazer aqui um select box de 1 a 10 do que usar type number, que achas?*/}
+
                 <TextField
                     label="Max Players"
                     type="number"
@@ -190,6 +194,8 @@ function NewThread() {
                     error={!!errors.releaseYear}
                     helperText={errors.releaseYear?.message}
                 />
+
+                {/*talvez fique mais controlável fazer aqui um select box de 1 a 5 estrelas do que usar type number, que achas?*/}
 
                 <TextField
                     label="Difficulty Level (1-5)"
