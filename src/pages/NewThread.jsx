@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { db } from '../firebase';
+import { useAuth } from '../context/AuthContext';
+import { compressImage, MAX_IMAGE_DATA_URL_LENGTH } from '../utils/imageCompression';
 
 import {
     Box,
@@ -16,15 +18,22 @@ import {
     Alert,
     Stack,
     FormHelperText,
+    IconButton,
+    CircularProgress,
 } from '@mui/material';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import ImageIcon from '@mui/icons-material/Image';
 
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile'];
 
-{/*NA, SA ou North America, South America, ou só mesmo America?} */ }
 
-const REGIONS = ['NA', 'SA', 'Europe', 'Africa', 'Asia', 'Australia'];
+
+const REGIONS = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Australia'];
 
 function NewThread() {
+    const { currentUser } = useAuth();
+    const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
@@ -43,20 +52,21 @@ function NewThread() {
         },
     });
 
-    const navigate = useNavigate();
-
     const [firebaseError, setFirebaseError] = useState('');
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [imagePreview, setImagePreview] = useState('');
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const [imageError, setImageError] = useState('');
 
     async function onSubmit(data) {
         setFirebaseError('');
         setSuccess(false);
         setLoading(true);
 
-        {/*pfv cria o login para começarmos a testar com accs*/ }
 
-        if (!auth.currentUser) {
+
+        if (!currentUser) {
             setFirebaseError('You need to be logged in to post a thread.');
             setLoading(false);
             return;
@@ -72,7 +82,8 @@ function NewThread() {
                 releaseYear: data.releaseYear,
                 difficulty: data.difficulty,
                 region: data.region,
-                authorId: auth.currentUser.uid,
+                imageUrl: imagePreview,
+                authorId: currentUser.uid,
                 createdAt: new Date().toISOString(),
             });
 
@@ -84,6 +95,35 @@ function NewThread() {
             console.error('Error creating thread:', error);
         } finally {
             setLoading(false);
+        }
+    }
+
+    // comprime a imagem para o base64
+    async function handleImageChange(file) {
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            setImageError('Please choose an image file.');
+            return;
+        }
+
+        setUploadingImage(true);
+        setImageError('');
+
+        try {
+            const dataUrl = await compressImage(file);
+
+            if (dataUrl.length > MAX_IMAGE_DATA_URL_LENGTH) {
+                setImageError('That image is too large even after compression. Try a smaller picture.');
+                return;
+            }
+
+            setImagePreview(dataUrl);
+        } catch (err) {
+            setImageError("Couldn't process that image. Try again.");
+            console.error(err);
+        } finally {
+            setUploadingImage(false);
         }
     }
 
@@ -99,6 +139,66 @@ function NewThread() {
             </Typography>
 
             <Stack spacing={2}>
+
+                <Box
+                    sx={{
+                        position: 'relative',
+                        height: 180,
+                        bgcolor: 'grey.200',
+                        borderRadius: 1,
+                        backgroundImage: imagePreview ? `url(${imagePreview})` : 'none',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    {!imagePreview && (
+                        <ImageIcon sx={{ fontSize: 48, color: 'grey.400' }} />
+                    )}
+
+                    {uploadingImage && (
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                inset: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                bgcolor: 'rgba(0, 0, 0, 0.4)',
+                                borderRadius: 1,
+                            }}
+                        >
+                            <CircularProgress sx={{ color: 'common.white' }} />
+                        </Box>
+                    )}
+
+                    <IconButton
+                        component="label"
+                        size="small"
+                        aria-label="upload banner image"
+                        disabled={loading}
+                        sx={{
+                            position: 'absolute',
+                            bottom: 8,
+                            right: 8,
+                            bgcolor: 'background.paper',
+                            '&:hover': { bgcolor: 'background.paper' },
+                        }}
+                    >
+                        <PhotoCameraIcon fontSize="small" />
+                        <input
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onChange={(e) => handleImageChange(e.target.files[0])}
+                        />
+                    </IconButton>
+                </Box>
+
+                {imageError && <Alert severity="error">{imageError}</Alert>}
+
                 <TextField
                     label="Game Name"
                     fullWidth
@@ -111,16 +211,15 @@ function NewThread() {
                     helperText={errors.gameName?.message}
                 />
 
-                {/* achas que mil chars chega? tb podemos ter este campo especifico sem max length*/}
+
                 <TextField
                     label="Description"
                     fullWidth
                     multiline
-                    rows={3}
+                    minRows={3}
                     {...register("description", {
                         required: "Tell other players what this thread is about.",
                         minLength: { value: 10, message: "Too short! Needs at least 10 characters." },
-                        maxLength: { value: 1000, message: "Keep it under 1000 characters." },
                     })}
                     error={!!errors.description}
                     helperText={errors.description?.message}
@@ -149,6 +248,8 @@ function NewThread() {
                     )}
                 />
 
+                {/*talvez fique mais controlável fazer aqui um select box de 1 a 10 do que usar type number, que achas?* MARINA CONCORDA, CORRIGIR/}
+
                 <TextField
                     label="Max Players"
                     type="number"
@@ -164,7 +265,7 @@ function NewThread() {
                     helperText={errors.maxPlayers?.message}
                 />
 
-                {/* Será que mais vale fazer um campo de "tags" em vez de texto livre? Porque um jogo pode ser, por exemplo, "RPG" e "Multiplayer", ou "Ação" e "Indie". */}
+                {/* Será que mais vale fazer um campo de "tags" em vez de texto livre? Porque um jogo pode ser, por exemplo, "RPG" e "Multiplayer", ou "Ação" e "Indie". MARINA CONCORDA, CORRIGIR*/}
                 <TextField
                     label="Category"
                     fullWidth
@@ -190,6 +291,8 @@ function NewThread() {
                     error={!!errors.releaseYear}
                     helperText={errors.releaseYear?.message}
                 />
+
+                {/*talvez fique mais controlável fazer aqui um select box de 1 a 5 estrelas do que usar type number, que achas? MARINA CONCORDA, CORRIGIR*/}
 
                 <TextField
                     label="Difficulty Level (1-5)"
