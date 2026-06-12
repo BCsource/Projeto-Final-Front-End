@@ -12,6 +12,7 @@ import ViewThread from './pages/ViewThread';
 import EditThread from './pages/EditThread';
 import MyThreads from './pages/MyThreads';
 import Favs from './pages/Favs';
+import NavBar from './components/NavBar';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -20,6 +21,7 @@ function App() {
   return (
     <>
       <CssBaseline />
+      <NavBar />
       <Routes>
         {/* Páginas publicas */}
         <Route path="/login" element={<Login />} />
