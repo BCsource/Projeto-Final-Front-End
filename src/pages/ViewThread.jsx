@@ -1,7 +1,15 @@
-{/* é so para não dar erro no App.jsx, a página ainda não existe */ }
+import { useParams } from 'react-router-dom';
+import PartyInvites from '../components/PartyInvites';
 
 function ViewThread() {
-    return <div>View Thread — TODO</div>;
+    const { threadId } = useParams();
+    return (
+        <div style={{ maxWidth: 600, margin: '32px auto', padding: '0 16px' }}>
+            <PartyInvites threadId={threadId} />
+        </div>
+    );
 }
 
 export default ViewThread;
+
+// PARA TESTAR até fazeres essa parte :) depois podes apagar
