@@ -20,7 +20,6 @@ function NavBar() {
     return (
         <AppBar position="static">
             <Toolbar>
-                {/* Brand on the left, takes the remaining space */}
                 <Typography
                     variant="h6"
                     component={RouterLink}
@@ -30,32 +29,17 @@ function NavBar() {
                     GG Mates
                 </Typography>
 
-                <Button color="inherit" component={RouterLink} to="/">
-                    Home
-                </Button>
-
                 {currentUser ? (
-                    // Logged in
                     <>
-                        <Button color="inherit" component={RouterLink} to="/profile">
-                            Profile
-                        </Button>
-                        <Button color="inherit" component={RouterLink} to="/users">
-                            Players
-                        </Button>
-                        <Button color="inherit" onClick={handleLogout}>
-                            Log out
-                        </Button>
+                        <Button color="inherit" component={RouterLink} to="/">Home</Button>
+                        <Button color="inherit" component={RouterLink} to="/profile">Profile</Button>
+                        <Button color="inherit" component={RouterLink} to="/users">Players</Button>
+                        <Button color="inherit" onClick={handleLogout}>Log out</Button>
                     </>
                 ) : (
-                    // Logged out
                     <>
-                        <Button color="inherit" component={RouterLink} to="/login">
-                            Log in
-                        </Button>
-                        <Button color="inherit" component={RouterLink} to="/register">
-                            Register
-                        </Button>
+                        <Button color="inherit" component={RouterLink} to="/login">Log in</Button>
+                        <Button color="inherit" component={RouterLink} to="/register">Register</Button>
                     </>
                 )}
             </Toolbar>
