@@ -32,6 +32,9 @@ function NavBar() {
                 {currentUser ? (
                     <>
                         <Button color="inherit" component={RouterLink} to="/">Home</Button>
+                        <Button color="inherit" component={RouterLink} to="/threads/new">New Thread</Button>
+                        <Button color="inherit" component={RouterLink} to="/my-threads">My Threads</Button>
+                        <Button color="inherit" component={RouterLink} to="/favorites">Favorites</Button>
                         <Button color="inherit" component={RouterLink} to="/profile">Profile</Button>
                         <Button color="inherit" component={RouterLink} to="/users">Players</Button>
                         <Button color="inherit" onClick={handleLogout}>Log out</Button>
