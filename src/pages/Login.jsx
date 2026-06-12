@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 
@@ -10,9 +11,12 @@ import {
     Button,
     Alert,
     Stack,
+    Link,
 } from '@mui/material';
 
 function Login() {
+    const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
@@ -28,18 +32,16 @@ function Login() {
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // Only runs when ALL fields pass React Hook Form validation
     async function onSubmit(data) {
         setFirebaseError('');
         setSuccess(false);
         setLoading(true);
 
         try {
-            // Sign the player in with Firebase Authentication
             await signInWithEmailAndPassword(auth, data.email, data.password);
 
             setSuccess(true);
-            // When routing is ready, replace with: navigate("/")
+            setTimeout(() => navigate('/'), 1500);
         } catch (error) {
             if (
                 error.code === 'auth/invalid-credential' ||
@@ -104,6 +106,13 @@ function Login() {
                 <Button type="submit" variant="contained" disabled={loading}>
                     {loading ? "Entering the arena..." : "Log in"}
                 </Button>
+
+                <Typography variant="body2" align="center">
+                    New here?{" "}
+                    <Link component={RouterLink} to="/register">
+                        Create an account
+                    </Link>
+                </Typography>
             </Stack>
         </Box>
     );
