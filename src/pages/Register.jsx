@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import {
     Box,
