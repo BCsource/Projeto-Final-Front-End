@@ -234,8 +234,8 @@ function Register() {
                         required: "Enter your date of birth.",
                         validate: (value) => {
                             const age = calculateAge(value);
-                            if (age < 18 || age > 120) {
-                                return "You need to be at least 18 years old.";
+                            if (age < 13 || age > 120) {
+                                return "You need to be at least 13 years old.";
                             }
                             return true;
                         },
