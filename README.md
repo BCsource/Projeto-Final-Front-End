@@ -35,9 +35,9 @@ Representa qualquer pessoa registada na plataforma. Pode publicar perfis de jogo
 | Palavra-passe | String | Mín. 6 car., letras + números + carácter especial |
 | Primeiro Nome | String | Mínimo 2 caracteres |
 | Apelido | String | Mínimo 2 caracteres |
-| Data de Nascimento | Data | Derivada de idade entre 18 e 120 anos |
+| Data de Nascimento | Data | Derivada de idade entre 13 e 120 anos |
 | Username / Gamertag | String | Identificador público único na plataforma |
-| Plataforma Principal | String | PC, PS5, Xbox, Nintendo Switch, Mobile |
+| Plataforma Principal | String | PC, PlayStation, Xbox, Nintendo Switch, Mobile |
 
 ### Entidade 2: Perfil de Jogo (Recurso Principal)
 
