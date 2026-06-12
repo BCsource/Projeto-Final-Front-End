@@ -21,12 +21,19 @@ function App() {
     <>
       <CssBaseline />
       <Routes>
-        {/* Pages publiques */}
-        <Route path="/" element={<HomePage />} />
+        {/* Páginas publicas */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Pages réservées aux connectés */}
+        {/* Páginas restritas a utilizadores autenticados */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/profile"
           element={
@@ -43,13 +50,48 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/threads/new" element={<NewThread />} />
-        <Route path="/threads/:threadId" element={<ViewThread />} />
-        <Route path="/threads/:threadId/edit" element={<EditThread />} />
-        <Route path="/my-threads" element={<MyThreads />} />
-        <Route path="/favorites" element={<Favs />} />
+        <Route
+          path="/threads/new"
+          element={
+            <ProtectedRoute>
+              <NewThread />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/threads/:threadId"
+          element={
+            <ProtectedRoute>
+              <ViewThread />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/threads/:threadId/edit"
+          element={
+            <ProtectedRoute>
+              <EditThread />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-threads"
+          element={
+            <ProtectedRoute>
+              <MyThreads />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <Favs />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Page réservée aux admins */}
+        {/* paginas Admin-only */}
         <Route
           path="/users"
           element={
@@ -59,7 +101,7 @@ function App() {
           }
         />
 
-        {/* Toute autre URL → retour à l'accueil */}
+        {/* url nao existentes/sem path - vai para o login/register */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
