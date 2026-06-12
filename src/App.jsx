@@ -1,11 +1,15 @@
 import { Routes, Route } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
+
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
-import ProtectedRoute from './components/ProtectedRoute';
+import AllUsersAdminOnly from './pages/AllUsersAdminOnly';
 
-// Temporary Placeholder for the home page, which will be built later
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
+
+// Placeholder temporaire en attendant la vraie Home de ta collègue
 function Home() {
   return <h1>GG Mates — Home (placeholder)</h1>;
 }
@@ -28,13 +32,29 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public pages */}
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={
-          // to protect the profile page, we wrap it in <ProtectedRoute>
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
+
+        {/* Member pages */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin-only page */}
+        <Route
+          path="/users"
+          element={
+            <AdminRoute>
+              <AllUsersAdminOnly />
+            </AdminRoute>
+          }
         />
         <Route path="/register" element={<Register />} />
 
