@@ -3,7 +3,7 @@ import { CssBaseline } from '@mui/material';
 import Register from './pages/Register';
 import Login from './pages/Login';
 
-// Placeholder temporaire — la vraie Home est dans le scope du Programmeur A
+// Temporary Placeholder  
 function Home() {
   return <h1>GG Mates — Home (placeholder)</h1>;
 }
