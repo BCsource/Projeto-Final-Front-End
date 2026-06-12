@@ -86,6 +86,7 @@ function Register() {
                 createdAt: new Date().toISOString(),
             });
             setSuccess(true);
+            setTimeout(() => navigate('/'), 1500);
 
         } catch (error) {
             if (error.code === 'auth/email-already-in-use') {
