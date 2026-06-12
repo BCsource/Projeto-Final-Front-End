@@ -1,43 +1,32 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 
-import Register from './pages/Register';
 import Login from './pages/Login';
+import Register from './pages/Register';
+import HomePage from './pages/HomePage';
 import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
 import AllUsersAdminOnly from './pages/AllUsersAdminOnly';
+import NewThread from './pages/NewThread';
+import ViewThread from './pages/ViewThread';
+import EditThread from './pages/EditThread';
+import MyThreads from './pages/MyThreads';
+import Favs from './pages/Favs';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 
-// Placeholder temporaire en attendant la vraie Home de ta collègue
-function Home() {
-  return <h1>GG Mates — Home (placeholder)</h1>;
-}
-import './App.css'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-
-import Login from './pages/Login'
-import Register from './pages/Register'
-import HomePage from './pages/HomePage'
-import NewThread from './pages/NewThread'
-import EditThread from './pages/EditThread'
-import MyThreads from './pages/MyThreads'
-import Favs from './pages/Favs'
-import Profile from './pages/Profile'
-import AllUsersAdminOnly from './pages/AllUsersAdminOnly'
-import ViewThread from './pages/ViewThread'
-import EditProfile from './pages/EditProfile'
-
 function App() {
   return (
-    <BrowserRouter>
+    <>
+      <CssBaseline />
       <Routes>
-        {/* Public pages */}
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
+        {/* Pages publiques */}
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-        {/* Member pages */}
+        {/* Pages réservées aux connectés */}
         <Route
           path="/profile"
           element={
@@ -46,8 +35,21 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/profile/edit"
+          element={
+            <ProtectedRoute>
+              <EditProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/threads/new" element={<NewThread />} />
+        <Route path="/threads/:threadId" element={<ViewThread />} />
+        <Route path="/threads/:threadId/edit" element={<EditThread />} />
+        <Route path="/my-threads" element={<MyThreads />} />
+        <Route path="/favorites" element={<Favs />} />
 
-        {/* Admin-only page */}
+        {/* Page réservée aux admins */}
         <Route
           path="/users"
           element={
@@ -56,28 +58,12 @@ function App() {
             </AdminRoute>
           }
         />
-        <Route path="/register" element={<Register />} />
 
-        <Route path="/" element={<HomePage />} />
-        <Route path="/threads/new" element={<NewThread />} />
-        <Route path="/threads/:threadId" element={<ViewThread />} />
-        <Route path="/threads/:threadId/edit" element={<EditThread />} />
-
-
-        <Route path="/my-threads" element={<MyThreads />} />
-        <Route path="/favorites" element={<Favs />} />
-
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/profile/edit" element={<EditProfile />} />
-
-
-        <Route path="/admin/users" element={<AllUsersAdminOnly />} />
-
-
-        <Route path="*" element={<Navigate to="/" replace />} /> {/* redireciona para home se a rota não for encontrada */}
+        {/* Toute autre URL → retour à l'accueil */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
-  )
+    </>
+  );
 }
 
-export default App
+export default App;
