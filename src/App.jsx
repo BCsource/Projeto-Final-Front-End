@@ -1,24 +1,41 @@
-import { Routes, Route } from 'react-router-dom';
-import { CssBaseline } from '@mui/material';
-import Register from './pages/Register';
-import Login from './pages/Login';
+import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
-// Temporary Placeholder  
-function Home() {
-  return <h1>GG Mates — Home (placeholder)</h1>;
-}
+import Login from './pages/Login'
+import Register from './pages/Register'
+import HomePage from './pages/HomePage'
+import NewThread from './pages/NewThread'
+import EditThread from './pages/EditThread'
+import MyThreads from './pages/MyThreads'
+import Favs from './pages/Favs'
+import Profile from './pages/Profile'
+import AllUsersAdminOnly from './pages/AllUsersAdminOnly'
 
 function App() {
   return (
-    <>
-      <CssBaseline />
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        <Route path="/" element={<HomePage />} />
+        <Route path="/threads/new" element={<NewThread />} />
+        <Route path="/threads/:threadId/edit" element={<EditThread />} />
+
+
+        <Route path="/my-threads" element={<MyThreads />} />
+        <Route path="/favorites" element={<Favs />} />
+
+        <Route path="/profile" element={<Profile />} />
+
+
+        <Route path="/admin/users" element={<AllUsersAdminOnly />} />
+
+
+        <Route path="*" element={<Navigate to="/" replace />} /> {/* redireciona para home se a rota não for encontrada */}
       </Routes>
-    </>
-  );
+    </BrowserRouter>
+  )
 }
 
-export default App;
+export default App
