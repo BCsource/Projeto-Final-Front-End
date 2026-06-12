@@ -21,9 +21,9 @@ import {
 
 const PLATFORMS = ['PC', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile'];
 
-{/*NA, SA ou North America, South America, ou só mesmo America?} */ }
 
-const REGIONS = ['NA', 'SA', 'Europe', 'Africa', 'Asia', 'Australia'];
+
+const REGIONS = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Australia'];
 
 function NewThread() {
     const { currentUser } = useAuth();
@@ -113,7 +113,7 @@ function NewThread() {
                     helperText={errors.gameName?.message}
                 />
 
-                {/* achas que mil chars chega? tb podemos ter este campo especifico sem max length*/}
+
                 <TextField
                     label="Description"
                     fullWidth
@@ -122,7 +122,7 @@ function NewThread() {
                     {...register("description", {
                         required: "Tell other players what this thread is about.",
                         minLength: { value: 10, message: "Too short! Needs at least 10 characters." },
-                        maxLength: { value: 1000, message: "Keep it under 1000 characters." },
+                        maxLength: { value: 1500, message: "Keep it under 1000 characters." },
                     })}
                     error={!!errors.description}
                     helperText={errors.description?.message}
