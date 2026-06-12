@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from '../context/AuthContext';
+import { compressImage, MAX_IMAGE_DATA_URL_LENGTH } from '../utils/imageCompression';
 
 import {
     Box,
@@ -35,48 +36,9 @@ function formatDate(isoString) {
     return new Date(isoString).toLocaleDateString('en-GB');
 }
 
-// Faz o Resize e compressão da imagem, devolvendo um URL de data base64. Assim as banners ficam dentro do limite do firestore.
-
-function compressImage(file, maxDimension = 600, quality = 0.7) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error('Could not read file.'));
-        reader.onload = () => {
-            const img = new Image();
-            img.onerror = () => reject(new Error('Could not load image.'));
-            img.onload = () => {
-                let { width, height } = img;
-
-                if (width > height && width > maxDimension) {
-                    height = Math.round((height * maxDimension) / width);
-                    width = maxDimension;
-                } else if (height > maxDimension) {
-                    width = Math.round((width * maxDimension) / height);
-                    height = maxDimension;
-                }
-
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-
-                const ctx = canvas.getContext('2d');
-
-                //so para os pngs ficarem com fundo branco e nao preto
-
-                ctx.fillStyle = '#f0f0f0';  //let the FOFOFOFO saga begiiiiin
-                ctx.fillRect(0, 0, width, height);
-                ctx.drawImage(img, 0, 0, width, height);
-
-                resolve(canvas.toDataURL('image/jpeg', quality));
-            };
-            img.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
 function MyThreads() {
     const { currentUser } = useAuth();
+    const navigate = useNavigate();
 
     const [threads, setThreads] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -147,10 +109,10 @@ function MyThreads() {
         try {
             const imageUrl = await compressImage(file);
 
-            // como o limite do firesotre ´1 1mb, assim tem espaço suficiente para o input dos outros campos.
+            // como o limite do firestore é 1mb, este limite deixa espaço suficiente para o input dos outros campos.
 
-            if (imageUrl.length > 700_000) {
-                setError('That image is too large even after compression. Try a smaller or simpler picture.');
+            if (imageUrl.length > MAX_IMAGE_DATA_URL_LENGTH) {
+                setError('That image is too large even after compression. Try a smaller picture.');
                 return;
             }
 
@@ -199,9 +161,17 @@ function MyThreads() {
                     }}
                 >
                     {threads.map((t) => (
-                        <Card key={t.id} sx={{ display: 'flex', flexDirection: 'column' }}>
-
+                        <Card
+                            key={t.id}
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                transition: 'box-shadow 0.2s',
+                                '&:hover': { boxShadow: 6 },
+                            }}
+                        >
                             <Box
+                                onClick={() => navigate(`/threads/${t.id}`)}
                                 sx={{
                                     position: 'relative',
                                     height: 160,
@@ -212,6 +182,7 @@ function MyThreads() {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
+                                    cursor: 'pointer',
                                 }}
                             >
                                 {!t.imageUrl && (
@@ -237,6 +208,7 @@ function MyThreads() {
                                     component="label"
                                     size="small"
                                     aria-label="upload banner image"
+                                    onClick={(e) => e.stopPropagation()}
                                     sx={{
                                         position: 'absolute',
                                         bottom: 8,
@@ -255,7 +227,10 @@ function MyThreads() {
                                 </IconButton>
                             </Box>
 
-                            <CardContent sx={{ flexGrow: 1 }}>
+                            <CardContent
+                                onClick={() => navigate(`/threads/${t.id}`)}
+                                sx={{ flexGrow: 1, cursor: 'pointer' }}
+                            >
                                 <Typography variant="h6" gutterBottom>
                                     {t.gameName}
                                 </Typography>
