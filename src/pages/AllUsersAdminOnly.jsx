@@ -33,6 +33,7 @@ function AllUsersAdminOnly() {
     const [error, setError] = useState('');
     const [actionId, setActionId] = useState(null);
     const [toDelete, setToDelete] = useState(null);
+    const [toToggle, setToToggle] = useState(null);
 
     useEffect(() => {
         async function fetchPlayers() {
@@ -50,7 +51,9 @@ function AllUsersAdminOnly() {
         fetchPlayers();
     }, []);
 
-    async function toggleAdmin(player) {
+    async function confirmToggleAdmin() {
+        const player = toToggle;
+        setToToggle(null);
         setError('');
         setActionId(player.id);
         try {
@@ -94,9 +97,7 @@ function AllUsersAdminOnly() {
 
     return (
         <Box sx={{ maxWidth: 1000, mx: 'auto', mt: 4, px: 2 }}>
-            <Typography variant="h4" gutterBottom>
-                Player Roster
-            </Typography>
+            <Typography variant="h4" gutterBottom>Player Roster</Typography>
 
             {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
@@ -139,9 +140,9 @@ function AllUsersAdminOnly() {
                                                         size="small"
                                                         variant="outlined"
                                                         disabled={busy}
-                                                        onClick={() => toggleAdmin(p)}
+                                                        onClick={() => setToToggle(p)}
                                                     >
-                                                        {p.isAdmin ? 'Remove admin' : 'Make admin'}
+                                                        {p.isAdmin ? 'Make user' : 'Make admin'}
                                                     </Button>
                                                     <Button
                                                         size="small"
@@ -163,6 +164,25 @@ function AllUsersAdminOnly() {
                 </TableContainer>
             )}
 
+            {/* Confirm promote / demote */}
+            <Dialog open={!!toToggle} onClose={() => setToToggle(null)}>
+                <DialogTitle>
+                    {toToggle?.isAdmin ? 'Remove admin rights?' : 'Make this player an admin?'}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        {toToggle?.isAdmin
+                            ? `${toToggle?.username} will become a regular player.`
+                            : `${toToggle?.username} will get full admin access to the roster.`}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setToToggle(null)}>Cancel</Button>
+                    <Button onClick={confirmToggleAdmin}>Confirm</Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Confirm delete */}
             <Dialog open={!!toDelete} onClose={() => setToDelete(null)}>
                 <DialogTitle>Remove this player?</DialogTitle>
                 <DialogContent>
