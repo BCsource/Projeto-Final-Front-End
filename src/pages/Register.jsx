@@ -4,6 +4,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 import {
     Box,
@@ -47,6 +48,8 @@ function Register() {
             mainPlatform: '',
         },
     });
+
+    const navigate = useNavigate();
 
     const [firebaseError, setFirebaseError] = useState('');
     const [success, setSuccess] = useState(false);
@@ -93,6 +96,9 @@ function Register() {
 
             setSuccess(true);
             // Show the success message briefly, then go to the home page
+            setTimeout(() => navigate('/'), 1500);
+
+            // pausa para o user ver a mensagem antes de ir para a home
             setTimeout(() => navigate('/'), 1500);
 
         } catch (error) {
